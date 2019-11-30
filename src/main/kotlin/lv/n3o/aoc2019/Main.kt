@@ -5,13 +5,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import lv.n3o.aoc2019.tasks.Task
-import lv.n3o.aoc2019.tasks.formatTime
+import kotlin.math.roundToInt
 import kotlin.system.measureNanoTime
 
 private const val DEBUGGING = false
 
 object Main : CoroutineScope by CoroutineScope(Dispatchers.Default) {
-
     @JvmStatic
     fun main(args: Array<String>) {
         runBlocking {
@@ -71,6 +70,13 @@ object Main : CoroutineScope by CoroutineScope(Dispatchers.Default) {
             println("Time total: ${totalTime.formatTime()}")
         }
     }
-
-
 }
+
+private val startTime = System.nanoTime()
+
+val timeFromApplicationStart get() = System.nanoTime() - startTime
+
+fun Long.formatTime(): String = (this / 1000000.0).roundToInt().toString()
+    .padStart(6, ' ')
+    .chunked(3)
+    .joinToString(" ") + "ms"

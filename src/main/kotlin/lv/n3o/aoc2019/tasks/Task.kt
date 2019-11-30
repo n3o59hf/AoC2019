@@ -1,5 +1,8 @@
 package lv.n3o.aoc2019.tasks
 
+import lv.n3o.aoc2019.formatTime
+import lv.n3o.aoc2019.timeFromApplicationStart
+
 typealias DebugListener = (String) -> Unit
 
 abstract class Task {
