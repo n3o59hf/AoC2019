@@ -6,9 +6,9 @@ import javax.swing.text.StyledEditorKit
 
 @Suppress("unused")
 class Task : Task() {
-    val range = data04.split("-").map { it.toInt() }.let { (a, b) -> a..b }
+    private val range by lazy { data04.split("-").map { it.toInt() }.let { (a, b) -> a..b } }
 
-    val numbers by lazy {
+    private val numbers by lazy {
         range.map { Password(it) }
             .filter { it.increasing }
     }

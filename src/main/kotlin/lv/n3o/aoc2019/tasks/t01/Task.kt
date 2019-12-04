@@ -5,7 +5,7 @@ import lv.n3o.aoc2019.tasks.cleanLines
 
 @Suppress("unused")
 class Task : Task() {
-    val data = data01.cleanLines.map(String::toInt)
+    private val data by lazy { data01.cleanLines.map(String::toInt) }
 
     override fun a(): String =
         data.map { it / 3 - 2 }.sum().toString()

@@ -4,7 +4,7 @@ import lv.n3o.aoc2019.tasks.Task
 
 @Suppress("unused")
 class Task : Task() {
-    val programNumbers = data02.split(",").map(String::toInt)
+    private val programNumbers by lazy { data02.split(",").map(String::toInt) }
 
     class Memory(val backing: MutableList<Int>) {
         fun readDirect(position: Int) = backing[position]
