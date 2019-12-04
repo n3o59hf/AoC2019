@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     application
     kotlin("jvm") version "1.3.61"
@@ -12,7 +14,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    compile("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2")
 }
 
 tasks {
@@ -26,4 +28,8 @@ tasks {
 
 application {
     mainClassName = "lv.n3o.aoc2019.Main"
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    freeCompilerArgs = listOf("-Xinline-classes")
 }
