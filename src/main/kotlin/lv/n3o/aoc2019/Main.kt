@@ -5,6 +5,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import lv.n3o.aoc2019.tasks.Task
+import java.io.OutputStream
+import java.io.PrintWriter
 import kotlin.math.roundToInt
 import kotlin.system.measureNanoTime
 
@@ -56,7 +58,10 @@ object Main : CoroutineScope by CoroutineScope(Dispatchers.Default) {
                             taskTime += partBTime
                         } catch (e: Exception) {
                             append("=== DAY $name === FAILED!\n")
-                            append("\t${e::class.java.simpleName} - ${e.message}")
+                            append("\t${e::class.java.simpleName} - ${e.message}\n")
+                            e.stackTrace.forEach {
+                                append("$it\n")
+                            }
                         }
                     } to taskTime
                 }
@@ -80,3 +85,4 @@ fun Long.formatTime(): String = (this / 1000000.0).roundToInt().toString()
     .padStart(6, ' ')
     .chunked(3)
     .joinToString(" ") + "ms"
+
