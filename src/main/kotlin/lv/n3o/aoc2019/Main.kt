@@ -19,7 +19,7 @@ object Main : CoroutineScope by CoroutineScope(Dispatchers.Default) {
             val taskList = mutableListOf<Pair<String, Task>>()
             var totalTime: Long = 0
             val preparationTime = measureNanoTime {
-                (0..25).mapNotNull { index ->
+                (1..25).mapNotNull { index ->
                     async {
                         val number = index.toString().padStart(2, '0')
                         try {
