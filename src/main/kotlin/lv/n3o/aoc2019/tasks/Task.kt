@@ -16,7 +16,7 @@ abstract class Task {
         val time = timeFromApplicationStart.formatTime()
         val methodName = Thread.currentThread().stackTrace[2].methodName
 
-        println("$time ($className.$methodName): $logline")
+        debugListener?.let{ it(("$time ($className.$methodName): $logline\n")) }
     }
 
     open fun a(): String = ""
