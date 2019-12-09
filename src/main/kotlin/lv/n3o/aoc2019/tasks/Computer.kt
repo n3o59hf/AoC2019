@@ -127,12 +127,9 @@ enum class OpCode(val code: Int, val paramCount: Int) {
 
     suspend fun interpret(comp: IntComp, modes: Array<Mode>) {
         when (this) {
-            ERR -> {
-                error("Non existent opcode")
-            }
+            ERR -> error("Non existent opcode")
             ADD -> comp.memory[modes[2], comp.pc + 3] =
                 comp.memory[modes[0], comp.pc + 1] + comp.memory[modes[1], comp.pc + 2]
-
             MUL -> comp.memory[modes[2], comp.pc + 3] =
                 comp.memory[modes[0], comp.pc + 1] * comp.memory[modes[1], comp.pc + 2]
             INPUT -> comp.memory[modes[0], comp.pc + 1] =

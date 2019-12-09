@@ -51,7 +51,7 @@ object Main : CoroutineScope by CoroutineScope(Dispatchers.Default) {
                     buildString {
                         try {
                             if (DEBUGGING) {
-                                append("=== DAY $name === Debug\n")
+                                append("=== LOG $name ===\n")
                                 task.debugListener = { append(it) }
                             }
                             var partA = ""
@@ -63,7 +63,7 @@ object Main : CoroutineScope by CoroutineScope(Dispatchers.Default) {
                             val partBResult =
                                 if (io.testB == null) "Not specified" else if (io.testB == partB) "OK" else "FAIL (expected:${io.testB}"
 
-                            append("=== DAY $name === Time: ${(partATime + partBTime).formatTime()}\n")
+                            append("=== DAY $name ===\n\t Time:   ${(partATime + partBTime).formatTime()}\n")
                             append(
                                 "\t Part A: ${partATime.formatTime()} - ${partA.padEnd(
                                     32,
