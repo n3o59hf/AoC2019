@@ -6,26 +6,55 @@ import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.toList
 import kotlinx.coroutines.runBlocking
 
-class Memory(val backing: MutableList<Int>) {
-    fun readDirect(position: Int) = backing[position]
-    fun readIndirect(position: Int) = backing[backing[position]]
+class Memory(val backing: MutableList<Long>) {
+    var relativeOffset = 0
 
-    fun writeDirect(position: Int, value: Int) {
+    operator fun get(mode: Mode, position: Int) = read(mode, position)
+    operator fun set(mode: Mode, position: Int, value: Long) = write(mode, position, value)
+
+    private operator fun get(position: Int): Long {
+        ensureCapacity(position + 1)
+        return backing[position]
+    }
+
+    private operator fun set(position: Int, value: Long) {
+        ensureCapacity(position + 1)
         backing[position] = value
     }
 
-    fun writeIndirect(position: Int, value: Int) {
-        backing[backing[position]] = value
+    private fun readDirect(position: Int) = this[position]
+    private fun readIndirect(position: Int) = this[this[position].toInt()]
+    private fun readRelative(position: Int) = this[this[position].toInt() + relativeOffset]
+
+    private fun writeDirect(position: Int, value: Long) {
+        this[position] = value
     }
 
-    fun read(mode: Mode, position: Int) = when (mode) {
+    private fun writeIndirect(position: Int, value: Long) {
+        this[this[position].toInt()] = value
+    }
+
+    private fun writeRelative(position: Int, value: Long) {
+        this[this[position].toInt() + relativeOffset] = value
+    }
+
+    private fun read(mode: Mode, position: Int) = when (mode) {
         Mode.POSITION -> readIndirect(position)
         Mode.IMMEDIATE -> readDirect(position)
+        Mode.RELATIVE -> readRelative(position)
     }
 
-    fun write(mode: Mode, position: Int, value: Int) = when (mode) {
+    private fun write(mode: Mode, position: Int, value: Long) = when (mode) {
         Mode.POSITION -> writeIndirect(position, value)
         Mode.IMMEDIATE -> writeDirect(position, value)
+        Mode.RELATIVE -> writeRelative(position,value)
+    }
+
+    private fun ensureCapacity(size: Int) {
+        if (backing.size < size) {
+            val delta = size - backing.size
+            backing.addAll(List(delta) { 0L })
+        }
     }
 
     override fun toString() = "Memory($backing)"
@@ -34,13 +63,13 @@ class Memory(val backing: MutableList<Int>) {
 
 class IntComp(
     val memory: Memory,
-    val input: ReceiveChannel<Int>,
-    val output: SendChannel<Int>
+    val input: ReceiveChannel<Long>,
+    val output: SendChannel<Long>
 ) {
     var pc = 0
 
     suspend fun step(): Boolean {
-        val code = memory.readDirect(pc)
+        val code = memory[Mode.IMMEDIATE, pc].toInt()
         val op = OpCode.getOpcode(code)
         val modes = Mode.getModes(code, op)
         if (op == OpCode.HALT) {
@@ -65,12 +94,12 @@ class IntComp(
 
 fun doComputation(
     memory: Memory,
-    input: List<Int> = listOf()
-): List<Int> = runBlocking {
-    val inputs = Channel<Int>(Channel.UNLIMITED)
+    vararg input: Long
+): List<Long> = runBlocking {
+    val inputs = Channel<Long>(Channel.UNLIMITED)
     input.forEach { inputs.send(it) }
 
-    val outputs = Channel<Int>(Channel.UNLIMITED)
+    val outputs = Channel<Long>(Channel.UNLIMITED)
     IntComp(
         memory,
         inputs,
@@ -91,6 +120,7 @@ enum class OpCode(val code: Int, val paramCount: Int) {
     JIF(6, 2),
     LT(7, 3),
     EQ(8, 3),
+    OFFSET(9, 1),
     HALT(99, 0);
 
     val size = paramCount + 1
@@ -100,42 +130,31 @@ enum class OpCode(val code: Int, val paramCount: Int) {
             ERR -> {
                 error("Non existent opcode")
             }
-            ADD -> comp.memory.write(
-                modes[2], comp.pc + 3,
-                comp.memory.read(modes[0], comp.pc + 1) + comp.memory.read(modes[1], comp.pc + 2)
-            )
-            MUL -> comp.memory.write(
-                modes[2], comp.pc + 3,
-                comp.memory.read(modes[0], comp.pc + 1) * comp.memory.read(modes[1], comp.pc + 2)
-            )
-            INPUT -> comp.memory.write(
-                modes[0],
-                comp.pc + 1,
+            ADD -> comp.memory[modes[2], comp.pc + 3] =
+                comp.memory[modes[0], comp.pc + 1] + comp.memory[modes[1], comp.pc + 2]
+
+            MUL -> comp.memory[modes[2], comp.pc + 3] =
+                comp.memory[modes[0], comp.pc + 1] * comp.memory[modes[1], comp.pc + 2]
+            INPUT -> comp.memory[modes[0], comp.pc + 1] =
                 comp.input.receive()
-            )
-            JIT -> if (comp.memory.read(modes[0], comp.pc + 1) != 0) {
-                comp.pc = comp.memory.read(modes[1], comp.pc + 2) - size
+            JIT -> if (comp.memory[modes[0], comp.pc + 1] != 0L) {
+                comp.pc = comp.memory[modes[1], comp.pc + 2].toInt() - size
             }
-            JIF -> if (comp.memory.read(modes[0], comp.pc + 1) == 0) {
-                comp.pc = comp.memory.read(modes[1], comp.pc + 2) - size
+            JIF -> if (comp.memory[modes[0], comp.pc + 1] == 0L) {
+                comp.pc = comp.memory[modes[1], comp.pc + 2].toInt() - size
             }
             LT -> {
-                comp.memory.write(
-                    modes[2],
-                    comp.pc + 3,
-                    if (comp.memory.read(modes[0], comp.pc + 1) < comp.memory.read(modes[1], comp.pc + 2)) 1 else 0
-                )
+                comp.memory[modes[2], comp.pc + 3] =
+                    if (comp.memory[modes[0], comp.pc + 1] < comp.memory[modes[1], comp.pc + 2]) 1 else 0
             }
             EQ -> {
-                comp.memory.write(
-                    modes[2],
-                    comp.pc + 3,
-                    if (comp.memory.read(modes[0], comp.pc + 1) == comp.memory.read(modes[1], comp.pc + 2)) 1 else 0
-                )
+                comp.memory[modes[2], comp.pc + 3] =
+                    if (comp.memory[modes[0], comp.pc + 1] == comp.memory[modes[1], comp.pc + 2]) 1 else 0
             }
             OUTPUT -> comp.output.send(
-                comp.memory.read(modes[0], comp.pc + 1)
+                comp.memory[modes[0], comp.pc + 1]
             )
+            OFFSET -> comp.memory.relativeOffset += comp.memory[modes[0], comp.pc + 1].toInt()
             HALT -> error("Should not be executed")
         }
     }
@@ -157,7 +176,8 @@ enum class OpCode(val code: Int, val paramCount: Int) {
 
 enum class Mode(val modeConstant: Int) {
     POSITION(0),
-    IMMEDIATE(1);
+    IMMEDIATE(1),
+    RELATIVE(2);
 
     companion object {
         private val modeCache = Array(10) { POSITION }.apply {

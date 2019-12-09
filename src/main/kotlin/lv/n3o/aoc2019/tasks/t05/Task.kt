@@ -7,15 +7,15 @@ import lv.n3o.aoc2019.tasks.doComputation
 
 @Suppress("unused")
 class Task : Task() {
-    private val programNumbers by lazy { data05.split(",").map(String::toInt) }
+    private val programNumbers by lazy { data05.split(",").map(String::toLong) }
 
     override fun a(): String {
         val memory = Memory(programNumbers.toMutableList())
-        return "${doComputation(memory, listOf(1)).last()}"
+        return "${doComputation(memory, 1L).last()}"
     }
 
     override fun b() : String {
         val memory = Memory(programNumbers.toMutableList())
-        return "${doComputation(memory, listOf(5)).last()}"
+        return "${doComputation(memory, 5L).last()}"
     }
 }
