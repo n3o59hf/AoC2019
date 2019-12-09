@@ -6,6 +6,7 @@ import lv.n3o.aoc2019.timeFromApplicationStart
 typealias DebugListener = (String) -> Unit
 
 abstract class Task {
+    lateinit var input: String
     var debugListener: DebugListener? = null
 
     fun log(vararg things: Any?) {
@@ -16,7 +17,7 @@ abstract class Task {
         val time = timeFromApplicationStart.formatTime()
         val methodName = Thread.currentThread().stackTrace[2].methodName
 
-        debugListener?.let{ it(("$time ($className.$methodName): $logline\n")) }
+        debugListener?.let { it(("$time ($className.$methodName): $logline\n")) }
     }
 
     open fun a(): String = ""

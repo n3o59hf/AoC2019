@@ -47,7 +47,7 @@ class Memory(val backing: MutableList<Long>) {
     private fun write(mode: Mode, position: Int, value: Long) = when (mode) {
         Mode.POSITION -> writeIndirect(position, value)
         Mode.IMMEDIATE -> writeDirect(position, value)
-        Mode.RELATIVE -> writeRelative(position,value)
+        Mode.RELATIVE -> writeRelative(position, value)
     }
 
     private fun ensureCapacity(size: Int) {

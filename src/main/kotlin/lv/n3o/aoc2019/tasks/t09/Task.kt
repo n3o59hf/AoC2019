@@ -6,7 +6,7 @@ import lv.n3o.aoc2019.tasks.doComputation
 
 @Suppress("unused")
 class Task : Task() {
-    private val programNumbers by lazy { data09.split(",").map(String::toLong) }
+    private val programNumbers by lazy { input.split(",").map(String::toLong) }
 
     override fun a(): String {
         return doComputation(Memory(programNumbers.toMutableList()), 1L).first().toString()

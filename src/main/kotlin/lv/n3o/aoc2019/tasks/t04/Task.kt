@@ -1,12 +1,10 @@
 package lv.n3o.aoc2019.tasks.t04
 
 import lv.n3o.aoc2019.tasks.Task
-import lv.n3o.aoc2019.tasks.cleanLines
-import javax.swing.text.StyledEditorKit
 
 @Suppress("unused")
 class Task : Task() {
-    private val range by lazy { data04.split("-").map { it.toInt() }.let { (a, b) -> a..b } }
+    private val range by lazy { input.split("-").map { it.toInt() }.let { (a, b) -> a..b } }
 
     private val numbers by lazy {
         range.map { Password(it) }
@@ -16,6 +14,7 @@ class Task : Task() {
     override fun a() = "${numbers.count { it.repeats.any { r -> r >= 2 } }}"
 
     override fun b() = "${numbers.count { it.repeats.any { r -> r == 2 } }}"
+
 }
 
 inline class Password(val password: Int) {

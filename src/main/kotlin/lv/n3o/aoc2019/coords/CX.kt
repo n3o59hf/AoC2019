@@ -15,7 +15,7 @@ inline class CX(val coord: Int) {
 
     constructor(x: Int, y: Int) : this((x + COORD_OFFSET) + (y + COORD_OFFSET) * MAX_COORD2)
 
-    operator fun plus(other: CX) = CX(x + other.x, y + other.y  )
+    operator fun plus(other: CX) = CX(x + other.x, y + other.y)
 
     val x: Int get() = (coord % MAX_COORD2) - COORD_OFFSET
     val y: Int get() = (coord / MAX_COORD2) - COORD_OFFSET

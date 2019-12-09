@@ -3,9 +3,10 @@ package lv.n3o.aoc2019.tasks.t01
 import lv.n3o.aoc2019.tasks.Task
 import lv.n3o.aoc2019.tasks.cleanLines
 
+
 @Suppress("unused")
 class Task : Task() {
-    private val data by lazy { data01.cleanLines.map(String::toInt) }
+    private val data by lazy { input.cleanLines.map(String::toInt) }
 
     override fun a(): String =
         data.map { it / 3 - 2 }.sum().toString()

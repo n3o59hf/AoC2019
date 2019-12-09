@@ -1,6 +1,8 @@
 package lv.n3o.aoc2019.tasks.t06
 
-val data06 = """XR3)N91
+import lv.n3o.aoc2019.tasks.IO
+
+private val data06 = """XR3)N91
 YB5)2BZ
 K71)3LC
 7NR)88C
@@ -1651,3 +1653,12 @@ LH1)QMV
 Q3V)QYN
 KPP)BNR
 Q9V)88G""".trimIndent()
+
+private val answer06a = "261306"
+private val answer06b = "382"
+
+class IO : IO() {
+    override val input = data06
+    override val testA = answer06a
+    override val testB = answer06b
+}

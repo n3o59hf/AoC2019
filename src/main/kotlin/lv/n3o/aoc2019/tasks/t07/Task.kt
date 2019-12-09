@@ -9,7 +9,7 @@ import lv.n3o.aoc2019.tasks.Task
 
 @Suppress("unused")
 class Task : Task() {
-    private val programNumbers by lazy { data07.split(",").map(String::toLong) }
+    private val programNumbers by lazy { input.split(",").map(String::toLong) }
 
     override fun a(): String {
         fun amplifier(phase: Long, input: Long): Long {
@@ -25,7 +25,6 @@ class Task : Task() {
         }.max()
 
         return "$max"
-
     }
 
     override fun b(): String {

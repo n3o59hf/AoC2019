@@ -6,7 +6,7 @@ import lv.n3o.aoc2019.tasks.cleanLines
 @Suppress("unused")
 class Task : Task() {
     val data by lazy {
-        data06.cleanLines.map { l -> l.split(")") }.associateBy({ it.last() }, { it.first() })
+        input.cleanLines.map { l -> l.split(")") }.associateBy({ it.last() }, { it.first() })
     }
 
     fun getRoute(start: String) = generateSequence(start) {
@@ -23,4 +23,5 @@ class Task : Task() {
         val sanUnique = sanRoute - youRoute
         return "${(youUnique + sanUnique).size}"
     }
+
 }

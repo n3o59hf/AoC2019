@@ -35,8 +35,8 @@
 
 package lv.n3o.aoc2019.tasks.t08
 
-val fontColumns = mapOf<Long,String>(
-    0x3E09093EL to "A",	//A
+val fontColumns = mapOf<Long, String>(
+    0x3E09093EL to "A",    //A
     0x3F25251AL to "B",
     0x1E212112L to "C",
     0x3F21211EL to "D",
@@ -62,7 +62,7 @@ val fontColumns = mapOf<Long,String>(
     0x3B04043BL to "X",
     0x03043807L to "Y",
     0x312D2321L to "Z", // Z
-    0x102A2A3CL to "a",	//a
+    0x102A2A3CL to "a",    //a
     0x3F242418L to "b",
     0x1C222214L to "c",
     0x1824243FL to "d",
@@ -88,7 +88,7 @@ val fontColumns = mapOf<Long,String>(
     0x36080836L to "x",
     0x4E50503EL to "y",
     0x322A2622L to "z", //z
-    0x1E29251EL to "0",	//0
+    0x1E29251EL to "0",    //0
     0x223F2000L to "1",
     0x32292926L to "2",
     0x1221251AL to "3",
@@ -97,8 +97,8 @@ val fontColumns = mapOf<Long,String>(
     0x1E252518L to "6",
     0x01390503L to "7",
     0x1A25251AL to "8",
-    0x0629291EL to "9",	//9
-    0x002F0000L to "!",	//!
+    0x0629291EL to "9",    //9
+    0x002F0000L to "!",    //!
     0x00200000L to "." //.
 )
 

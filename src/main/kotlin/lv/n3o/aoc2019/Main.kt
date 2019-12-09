@@ -4,9 +4,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import lv.n3o.aoc2019.tasks.IO
 import lv.n3o.aoc2019.tasks.Task
-import java.io.OutputStream
-import java.io.PrintWriter
 import kotlin.math.roundToInt
 import kotlin.system.measureNanoTime
 
@@ -16,16 +15,21 @@ object Main : CoroutineScope by CoroutineScope(Dispatchers.Default) {
     @JvmStatic
     fun main(args: Array<String>) {
         runBlocking {
-            val taskList = mutableListOf<Pair<String, Task>>()
+            val taskList = mutableListOf<Triple<String, Task, IO>>()
             var totalTime: Long = 0
             val preparationTime = measureNanoTime {
                 (1..25).mapNotNull { index ->
                     async {
                         val number = index.toString().padStart(2, '0')
                         try {
-                            val clazz = Class.forName("lv.n3o.aoc2019.tasks.t$number.Task")
-                            val task = clazz.getConstructor().newInstance() as? Task
-                            task?.let { it -> number to it }
+                            val ioClass = Class.forName("lv.n3o.aoc2019.tasks.t$number.IO")
+                            val io = ioClass.getConstructor().newInstance() as IO
+
+                            val taskClass = Class.forName("lv.n3o.aoc2019.tasks.t$number.Task")
+                            val task = taskClass.getConstructor().newInstance() as Task
+                            task.input = io.input
+
+                            Triple(number, task, io)
                         } catch (e: Exception) {
                             null
                         }
@@ -41,19 +45,37 @@ object Main : CoroutineScope by CoroutineScope(Dispatchers.Default) {
 
             totalTime += preparationTime
 
-            taskList.map { (name, task) ->
+            taskList.map { (name, task, io) ->
                 async {
                     var taskTime: Long = 0
                     buildString {
                         try {
-                            if (DEBUGGING) task.debugListener = { append(it) }
+                            if (DEBUGGING) {
+                                append("=== DAY $name === Debug\n")
+                                task.debugListener = { append(it) }
+                            }
                             var partA = ""
                             var partB = ""
                             val partATime = measureNanoTime { partA = task.a() }
                             val partBTime = measureNanoTime { partB = task.b() }
+                            val partAResult =
+                                if (io.testA == null) "Not specified" else if (io.testA == partA) "OK" else "FAIL (expected:${io.testA}"
+                            val partBResult =
+                                if (io.testB == null) "Not specified" else if (io.testB == partB) "OK" else "FAIL (expected:${io.testB}"
+
                             append("=== DAY $name === Time: ${(partATime + partBTime).formatTime()}\n")
-                            append("\t Part A: ${partATime.formatTime()} - ${partA}\n")
-                            append("\t Part B: ${partBTime.formatTime()} - ${partB}\n")
+                            append(
+                                "\t Part A: ${partATime.formatTime()} - ${partA.padEnd(
+                                    32,
+                                    ' '
+                                )} Result: $partAResult\n"
+                            )
+                            append(
+                                "\t Part B: ${partBTime.formatTime()} - ${partB.padEnd(
+                                    32,
+                                    ' '
+                                )} Result: $partBResult\n"
+                            )
                             taskTime += partATime
                             taskTime += partBTime
                         } catch (e: Exception) {

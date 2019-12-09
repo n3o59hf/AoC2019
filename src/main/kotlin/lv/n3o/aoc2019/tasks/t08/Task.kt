@@ -2,18 +2,20 @@ package lv.n3o.aoc2019.tasks.t08
 
 import lv.n3o.aoc2019.tasks.Task
 
+const val DATA_WIDTH = 25
+const val DATA_HEIGHT = 6
+
 @Suppress("unused")
 class Task : Task() {
     val imageLayers by lazy {
-        val chunkSize = data08width * data08height
-        data08
-            .windowed(chunkSize, chunkSize)
+        val chunkSize = DATA_WIDTH * DATA_HEIGHT
+        input.windowed(chunkSize, chunkSize)
     }
 
     val imagePixels by lazy {
-        List(data08width * data08height) { i ->
+        List(DATA_WIDTH * DATA_HEIGHT) { i ->
             imageLayers.asSequence().map { it[i] }.first { it != '2' }
-        }.windowed(data08width, data08width)
+        }.windowed(DATA_WIDTH, DATA_WIDTH)
     }
 
     override fun a(): String {
@@ -57,4 +59,5 @@ class Task : Task() {
             .map { fontColumns[it] }
             .joinToString("")
     }
+
 }

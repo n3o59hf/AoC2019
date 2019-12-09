@@ -7,7 +7,7 @@ typealias C = C2
 
 @Suppress("unused")
 class Task : Task() {
-    private val lines by lazy { data03.lines().map { it.split(",") } }
+    private val lines by lazy { input.lines().map { it.split(",") } }
 
     private val field: Map<C, IntArray> by lazy {
         val field = mutableMapOf<C, IntArray>()
