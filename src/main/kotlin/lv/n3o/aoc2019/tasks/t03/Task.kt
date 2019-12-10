@@ -1,6 +1,7 @@
 package lv.n3o.aoc2019.tasks.t03
 
 import lv.n3o.aoc2019.coords.C2
+import lv.n3o.aoc2019.coords.distance
 import lv.n3o.aoc2019.tasks.Task
 
 typealias C = C2

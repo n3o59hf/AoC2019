@@ -21,3 +21,13 @@ fun <T> List<T>.permute(): List<List<T>> {
         }
     return permutations
 }
+
+fun gcd(a: Int, b: Int): Int {
+    var gcd = a.coerceAtMost(b)
+    while (gcd > 0) {
+        if (a % gcd == 0 && b % gcd == 0)
+            return gcd
+        gcd--
+    }
+    return -1
+}

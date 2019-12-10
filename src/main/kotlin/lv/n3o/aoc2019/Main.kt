@@ -59,9 +59,9 @@ object Main : CoroutineScope by CoroutineScope(Dispatchers.Default) {
                             val partATime = measureNanoTime { partA = task.a() }
                             val partBTime = measureNanoTime { partB = task.b() }
                             val partAResult =
-                                if (io.testA == null) "Not specified" else if (io.testA == partA) "OK" else "FAIL (expected:${io.testA}"
+                                if (io.testA == null) "Not specified" else if (io.testA == partA) "OK" else "FAIL (expected:${io.testA})"
                             val partBResult =
-                                if (io.testB == null) "Not specified" else if (io.testB == partB) "OK" else "FAIL (expected:${io.testB}"
+                                if (io.testB == null) "Not specified" else if (io.testB == partB) "OK" else "FAIL (expected:${io.testB})"
 
                             append("=== DAY $name ===\n\t Time:   ${(partATime + partBTime).formatTime()}\n")
                             append(
