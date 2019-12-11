@@ -1,13 +1,6 @@
 package lv.n3o.aoc2019.coords
 
 class C2(override val x: Int, override val y: Int) : Coord {
-    companion object {
-        val right = C2(1, 0)
-        val left = C2(-1, 0)
-        val up = C2(0, -1)
-        val down = C2(0, 1)
-    }
-
     override operator fun plus(other: Coord) = C2(x + other.x, y + other.y)
 
     override fun equals(other: Any?): Boolean {

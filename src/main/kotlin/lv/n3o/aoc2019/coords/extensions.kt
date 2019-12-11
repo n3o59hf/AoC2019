@@ -5,6 +5,8 @@ import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan2
 
+typealias C = C2
+
 interface Coord {
     val x: Int
     val y: Int
@@ -13,6 +15,7 @@ interface Coord {
     fun new(x: Int, y: Int): Coord
 }
 
+operator fun Coord.minus(other: Coord) = this + new(-other.x, -other.y)
 fun Coord.distance(to: Coord) = abs(to.x - x) + abs(to.y - y)
 
 fun Coord.vector(to: Coord) = new(to.x - x, to.y - y)
@@ -66,3 +69,8 @@ fun Coord.clockAngle(to: Coord): Double {
         }
     }
 }
+
+fun Coord.rotate(direction: Boolean) = if (direction) rotateRight() else rotateLeft()
+
+fun Coord.rotateRight() = new(-y, x)
+fun Coord.rotateLeft() = new(y, -x)

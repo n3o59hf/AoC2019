@@ -1,10 +1,14 @@
 package lv.n3o.aoc2019.tasks.t03
 
+import lv.n3o.aoc2019.coords.C
 import lv.n3o.aoc2019.coords.C2
 import lv.n3o.aoc2019.coords.distance
 import lv.n3o.aoc2019.tasks.Task
 
-typealias C = C2
+val right = C(1, 0)
+val left = C(-1, 0)
+val up = C(0, -1)
+val down = C(0, 1)
 
 @Suppress("unused")
 class Task : Task() {
@@ -35,10 +39,10 @@ class Task : Task() {
     }
 
     fun fromDirectionChar(c: Char) = when (c) {
-        'R' -> C.right
-        'L' -> C.left
-        'U' -> C.up
-        'D' -> C.down
+        'R' -> right
+        'L' -> left
+        'U' -> up
+        'D' -> down
         else -> error("Unknown direction $c")
     }
 
