@@ -1,5 +1,7 @@
 package lv.n3o.aoc2019.tasks
 
+import kotlin.math.abs
+
 val String.cleanLines get() = lines().map { it.trim() }.filter { it.isNotBlank() }
 
 fun <T> List<T>.infinite() = sequence {
@@ -31,3 +33,15 @@ fun gcd(a: Int, b: Int): Int {
     }
     return -1
 }
+
+fun gcd(a: Long, b: Long): Long {
+    var gcd = a.coerceAtMost(b)
+    while (gcd > 0L) {
+        if (a % gcd == 0L && b % gcd == 0L)
+            return gcd
+        gcd--
+    }
+    return -1
+}
+
+fun lcm(a: Long, b: Long): Long = abs(a * b) / gcd(a, b)

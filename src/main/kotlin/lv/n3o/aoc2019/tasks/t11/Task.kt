@@ -4,7 +4,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import lv.n3o.aoc2019.coords.C
-import lv.n3o.aoc2019.coords.Coord
+import lv.n3o.aoc2019.coords.Coord2d
 import lv.n3o.aoc2019.coords.minus
 import lv.n3o.aoc2019.coords.rotate
 import lv.n3o.aoc2019.ocr.recognizeLetters
@@ -24,7 +24,7 @@ class Task : Task() {
             val output = Channel<Long>()
             launch {
                 var current = C(0, 0)
-                var direction: Coord = C(0, -1)
+                var direction: Coord2d = C(0, -1)
                 input.send(initial)
                 var state = true
                 for (o in output) {

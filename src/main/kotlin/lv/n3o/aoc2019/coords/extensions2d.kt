@@ -7,19 +7,19 @@ import kotlin.math.atan2
 
 typealias C = C2
 
-interface Coord {
+interface Coord2d {
     val x: Int
     val y: Int
 
-    operator fun plus(other: Coord): Coord
-    fun new(x: Int, y: Int): Coord
+    operator fun plus(other: Coord2d): Coord2d
+    fun new(x: Int, y: Int): Coord2d
 }
 
-operator fun Coord.minus(other: Coord) = this + new(-other.x, -other.y)
-fun Coord.distance(to: Coord) = abs(to.x - x) + abs(to.y - y)
+operator fun Coord2d.minus(other: Coord2d) = this + new(-other.x, -other.y)
+fun Coord2d.distance(to: Coord2d) = abs(to.x - x) + abs(to.y - y)
 
-fun Coord.vector(to: Coord) = new(to.x - x, to.y - y)
-fun Coord.linePoints(to: Coord) = sequence {
+fun Coord2d.vector(to: Coord2d) = new(to.x - x, to.y - y)
+fun Coord2d.linePoints(to: Coord2d) = sequence {
     if (this@linePoints == to) {
         yield(this@linePoints)
         return@sequence
@@ -54,7 +54,7 @@ fun Coord.linePoints(to: Coord) = sequence {
     }
 }
 
-fun Coord.clockAngle(to: Coord): Double {
+fun Coord2d.clockAngle(to: Coord2d): Double {
     val vector = vector(to)
     return when {
         vector.x == 0 && vector.y < 0 -> 0.0
@@ -70,7 +70,7 @@ fun Coord.clockAngle(to: Coord): Double {
     }
 }
 
-fun Coord.rotate(direction: Boolean) = if (direction) rotateRight() else rotateLeft()
+fun Coord2d.rotate(direction: Boolean) = if (direction) rotateRight() else rotateLeft()
 
-fun Coord.rotateRight() = new(-y, x)
-fun Coord.rotateLeft() = new(y, -x)
+fun Coord2d.rotateRight() = new(-y, x)
+fun Coord2d.rotateLeft() = new(y, -x)

@@ -1,7 +1,7 @@
 package lv.n3o.aoc2019.coords
 
-class C2(override val x: Int, override val y: Int) : Coord {
-    override operator fun plus(other: Coord) = C2(x + other.x, y + other.y)
+class C2(override val x: Int, override val y: Int) : Coord2d {
+    override operator fun plus(other: Coord2d) = C2(x + other.x, y + other.y)
 
     override fun equals(other: Any?): Boolean {
         if (other !is C2) return false
