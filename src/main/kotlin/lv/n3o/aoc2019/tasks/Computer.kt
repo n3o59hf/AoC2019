@@ -6,6 +6,8 @@ import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.toList
 import kotlinx.coroutines.runBlocking
 
+typealias AlternativeInputListener = suspend () -> Long
+
 class Memory(val backing: MutableList<Long>) {
     var relativeOffset = 0
 
@@ -63,8 +65,9 @@ class Memory(val backing: MutableList<Long>) {
 
 class IntComp(
     val memory: Memory,
-    val input: ReceiveChannel<Long>,
-    val output: SendChannel<Long>
+    val input: ReceiveChannel<Long>? = null,
+    val output: SendChannel<Long>,
+    val alternativeInputListener: AlternativeInputListener = {input?.receive() ?: error("IntComp requires one input!")}
 ) {
     var pc = 0
 
@@ -93,6 +96,11 @@ class IntComp(
 }
 
 fun doComputation(
+    memory: List<Long>,
+    vararg input: Long
+) = doComputation(Memory(memory.toMutableList()), *input)
+
+fun doComputation(
     memory: Memory,
     vararg input: Long
 ): List<Long> = runBlocking {
@@ -102,8 +110,8 @@ fun doComputation(
     val outputs = Channel<Long>(Channel.UNLIMITED)
     IntComp(
         memory,
-        inputs,
-        outputs
+        input = inputs,
+        output = outputs
     ).runToHalt()
 
     outputs.toList()
@@ -132,8 +140,9 @@ enum class OpCode(val code: Int, val paramCount: Int) {
                 comp.memory[modes[0], comp.pc + 1] + comp.memory[modes[1], comp.pc + 2]
             MUL -> comp.memory[modes[2], comp.pc + 3] =
                 comp.memory[modes[0], comp.pc + 1] * comp.memory[modes[1], comp.pc + 2]
-            INPUT -> comp.memory[modes[0], comp.pc + 1] =
-                comp.input.receive()
+            INPUT -> {
+                comp.memory[modes[0], comp.pc + 1] = comp.alternativeInputListener()
+            }
             JIT -> if (comp.memory[modes[0], comp.pc + 1] != 0L) {
                 comp.pc = comp.memory[modes[1], comp.pc + 2].toInt() - size
             }

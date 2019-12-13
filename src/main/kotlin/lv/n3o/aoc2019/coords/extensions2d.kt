@@ -12,7 +12,7 @@ interface Coord2d {
     val y: Int
 
     operator fun plus(other: Coord2d): Coord2d
-    fun new(x: Int, y: Int): Coord2d
+    fun new(x: Int = this.x, y: Int = this.y): Coord2d
 }
 
 operator fun Coord2d.minus(other: Coord2d) = this + new(-other.x, -other.y)
@@ -74,3 +74,8 @@ fun Coord2d.rotate(direction: Boolean) = if (direction) rotateRight() else rotat
 
 fun Coord2d.rotateRight() = new(-y, x)
 fun Coord2d.rotateLeft() = new(y, -x)
+
+fun Coord2d.unit() = new(
+    x.coerceIn(-1, 1),
+    y.coerceIn(-1, 1)
+)

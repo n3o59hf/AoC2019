@@ -9,6 +9,7 @@ abstract class Task {
     lateinit var input: String
     var debugListener: DebugListener? = null
 
+    fun isLoggerOn() = debugListener != null
     fun log(vararg things: Any?) {
         debugListener ?: return
 
