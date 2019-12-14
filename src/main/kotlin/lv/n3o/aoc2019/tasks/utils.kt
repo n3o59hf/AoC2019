@@ -45,3 +45,10 @@ fun gcd(a: Long, b: Long): Long {
 }
 
 fun lcm(a: Long, b: Long): Long = abs(a * b) / gcd(a, b)
+
+fun Long.divRoundedUp(divider: Long) = this.toNearestMultipleUp(divider) / divider
+
+fun Long.toNearestMultipleUp(factor: Long): Long {
+    val reminder = if (this % factor > 0) 1 else 0
+    return ((this / factor) + reminder) * factor
+}
