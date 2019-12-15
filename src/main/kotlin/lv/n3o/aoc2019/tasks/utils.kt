@@ -1,5 +1,7 @@
 package lv.n3o.aoc2019.tasks
 
+import lv.n3o.aoc2019.coords.C
+import lv.n3o.aoc2019.coords.Coord2d
 import kotlin.math.abs
 
 val String.cleanLines get() = lines().map { it.trim() }.filter { it.isNotBlank() }
@@ -51,4 +53,31 @@ fun Long.divRoundedUp(divider: Long) = this.toNearestMultipleUp(divider) / divid
 fun Long.toNearestMultipleUp(factor: Long): Long {
     val reminder = if (this % factor > 0) 1 else 0
     return ((this / factor) + reminder) * factor
+}
+
+fun <T> Map<Coord2d, T>.debugDraw(cellWidth: Int = 1, conversion: (T?) -> Any = {it.toString()}) {
+    val allKeys = keys
+
+    val maxX = allKeys.map(Coord2d::x).max() ?: 1
+    val maxY = allKeys.map(Coord2d::y).max() ?: 1
+    val minX = allKeys.map(Coord2d::x).min() ?: 1
+    val minY = allKeys.map(Coord2d::y).min() ?: 1
+
+
+    val cellBorder = (0 until cellWidth).joinToString("") { "-" }
+    val verticalSeperator = "\n" + (minX..maxX).joinToString("+", "+", "+") { cellBorder } + "\n"
+
+    val output = "\n$verticalSeperator" + (minY..maxY).map { y ->
+        (minX..maxX).map { x ->
+            var cell = conversion(this[C(x, y)]).toString()
+            cell = cell.substring(0, cell.length.coerceAtMost(cellWidth))
+            if (cell.length < cellWidth)
+                cell = cell.padEnd(cell.length + ((cellWidth - cell.length) / 2))
+            if (cell.length < cellWidth)
+                cell = cell.padStart(cellWidth)
+            cell
+        }.joinToString("|", "|", "|")
+
+    }.joinToString(verticalSeperator) + verticalSeperator
+    println("\n$output\n")
 }

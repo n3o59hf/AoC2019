@@ -1,9 +1,8 @@
 package lv.n3o.aoc2019.tasks
 
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.channels.toList
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.*
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 typealias AlternativeInputListener = suspend () -> Long
@@ -67,7 +66,9 @@ class IntComp(
     val memory: Memory,
     val input: ReceiveChannel<Long>? = null,
     val output: SendChannel<Long>,
-    val alternativeInputListener: AlternativeInputListener = {input?.receive() ?: error("IntComp requires one input!")}
+    val alternativeInputListener: AlternativeInputListener = {
+        input?.receive() ?: error("IntComp requires one input!")
+    }
 ) {
     var pc = 0
 
@@ -80,7 +81,11 @@ class IntComp(
             return false
         }
         if (op == OpCode.ERR) error("Unknown opcode $code at position $pc")
-        op.interpret(this, modes)
+        try {
+            op.interpret(this, modes)
+        } catch (e: ClosedReceiveChannelException) {
+            return false
+        }
         pc += op.size
         return true
     }
@@ -117,6 +122,45 @@ fun doComputation(
     outputs.toList()
 }
 
+class StepComputer(memory: Memory) {
+    private val inputChannel = Channel<Long>(capacity = 1)
+    private val outputChannel = Channel<Long>(capacity = 1)
+
+    private val comp = IntComp(memory, inputChannel, outputChannel)
+
+    suspend fun start() {
+        comp.runToHalt()
+    }
+
+    suspend fun doStep(input: Long): Long {
+        inputChannel.send(input)
+        return outputChannel.receive()
+    }
+
+    fun finish() {
+        inputChannel.close()
+    }
+}
+
+suspend fun doStepComputation(
+    coroutineScope: CoroutineScope,
+    memory: List<Long>,
+    scope: suspend StepComputer.() -> Unit
+): Unit =
+    doStepComputation(coroutineScope, Memory(memory.toMutableList()), scope)
+
+
+suspend fun doStepComputation(
+    coroutineScope: CoroutineScope,
+    memory: Memory,
+    scope: suspend StepComputer.() -> Unit
+) {
+    StepComputer(memory).apply {
+        coroutineScope.launch { start() }
+        scope()
+        finish()
+    }
+}
 
 enum class OpCode(val code: Int, val paramCount: Int) {
     ERR(0, 0),

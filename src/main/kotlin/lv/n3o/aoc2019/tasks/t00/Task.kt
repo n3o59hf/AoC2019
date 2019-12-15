@@ -5,7 +5,7 @@ import lv.n3o.aoc2019.tasks.cleanLines
 
 @Suppress("unused")
 class Task : Task() {
-    val data = input.cleanLines
+    val data by lazy { input.cleanLines }
 
     override fun a(): String {
         log("returning data from $data in position 0")
