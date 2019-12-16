@@ -5,9 +5,10 @@ import kotlinx.coroutines.channels.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-typealias AlternativeInputListener = suspend () -> Long
+typealias InputReceiver = suspend () -> Long
 
-class Memory(val backing: MutableList<Long>) {
+class Memory(initial: List<Long>) {
+    private var backing = initial.toLongArray()
     var relativeOffset = 0
 
     operator fun get(mode: Mode, position: Int) = read(mode, position)
@@ -53,22 +54,27 @@ class Memory(val backing: MutableList<Long>) {
 
     private fun ensureCapacity(size: Int) {
         if (backing.size < size) {
-            val delta = size - backing.size
-            backing.addAll(List(delta) { 0L })
+            val newArray = LongArray(size)
+            backing.copyInto(newArray)
+            backing = newArray
         }
     }
 
     override fun toString() = "Memory($backing)"
 }
 
+fun IntComp(
+    memory: Memory,
+    input: ReceiveChannel<Long>,
+    output: SendChannel<Long>
+) = IntComp(memory, output) {
+    input.receive()
+}
 
 class IntComp(
     val memory: Memory,
-    val input: ReceiveChannel<Long>? = null,
     val output: SendChannel<Long>,
-    val alternativeInputListener: AlternativeInputListener = {
-        input?.receive() ?: error("IntComp requires one input!")
-    }
+    val inputReceiver: InputReceiver
 ) {
     var pc = 0
 
@@ -103,7 +109,7 @@ class IntComp(
 fun doComputation(
     memory: List<Long>,
     vararg input: Long
-) = doComputation(Memory(memory.toMutableList()), *input)
+) = doComputation(Memory(memory), *input)
 
 fun doComputation(
     memory: Memory,
@@ -147,7 +153,7 @@ suspend fun doStepComputation(
     memory: List<Long>,
     scope: suspend StepComputer.() -> Unit
 ): Unit =
-    doStepComputation(coroutineScope, Memory(memory.toMutableList()), scope)
+    doStepComputation(coroutineScope, Memory(memory), scope)
 
 
 suspend fun doStepComputation(
@@ -185,7 +191,7 @@ enum class OpCode(val code: Int, val paramCount: Int) {
             MUL -> comp.memory[modes[2], comp.pc + 3] =
                 comp.memory[modes[0], comp.pc + 1] * comp.memory[modes[1], comp.pc + 2]
             INPUT -> {
-                comp.memory[modes[0], comp.pc + 1] = comp.alternativeInputListener()
+                comp.memory[modes[0], comp.pc + 1] = comp.inputReceiver()
             }
             JIT -> if (comp.memory[modes[0], comp.pc + 1] != 0L) {
                 comp.pc = comp.memory[modes[1], comp.pc + 2].toInt() - size
@@ -230,7 +236,7 @@ enum class Mode(val modeConstant: Int) {
     RELATIVE(2);
 
     companion object {
-        private val modeCache = Array(10) { POSITION }.apply {
+        private val modeCache = Array(values().map { it.modeConstant }.max() ?: 1) { POSITION }.apply {
             values().forEach {
                 this[it.modeConstant] = it
             }

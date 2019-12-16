@@ -20,7 +20,7 @@ class Task : Task() {
     override fun b(): String {
         var score = 0L
         runBlocking {
-            val memory = Memory(programNumbers.toMutableList())
+            val memory = Memory(programNumbers)
             memory[Mode.IMMEDIATE, 0] = 2L
             var ball = C(0, 0)
             var ballDirection: Coord2d = C(0, 0)

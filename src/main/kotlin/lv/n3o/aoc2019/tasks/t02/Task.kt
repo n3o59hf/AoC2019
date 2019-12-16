@@ -10,7 +10,7 @@ class Task : Task() {
     private val programNumbers by lazy { input.split(",").map(String::toLong) }
 
     override fun a(): String {
-        val memory = Memory(programNumbers.toMutableList())
+        val memory = Memory(programNumbers)
         memory[Mode.IMMEDIATE, 1] = 12L
         memory[Mode.IMMEDIATE, 2] = 2L
         doComputation(memory)
@@ -19,7 +19,7 @@ class Task : Task() {
 
     override fun b(): String {
         return (0L..99L).flatMap { a -> (0L..99L).map { b -> a to b } }.asSequence().first { (a, b) ->
-            val memory = Memory(programNumbers.toMutableList())
+            val memory = Memory(programNumbers)
             memory[Mode.IMMEDIATE, 1] = a
             memory[Mode.IMMEDIATE, 2] = b
             doComputation(memory)

@@ -19,7 +19,7 @@ class Task : Task() {
     fun field(initial: Long): Map<C, Boolean> {
         val field = mutableMapOf<C, Boolean>()
         runBlocking {
-            val memory = Memory(programNumbers.toMutableList())
+            val memory = Memory(programNumbers)
             val input = Channel<Long>(2)
             val output = Channel<Long>()
             launch {

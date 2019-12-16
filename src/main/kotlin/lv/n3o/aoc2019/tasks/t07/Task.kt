@@ -13,7 +13,7 @@ class Task : Task() {
 
     override fun a(): String {
         fun amplifier(phase: Long, input: Long): Long {
-            return doComputation(Memory(programNumbers.toMutableList()), phase, input).first()
+            return doComputation(programNumbers, phase, input).first()
         }
 
         val max = listOf(0L, 1L, 2L, 3L, 4L).permute().map {
@@ -31,7 +31,7 @@ class Task : Task() {
         fun amplifiers(phases: List<Long>): Long {
 
             fun amplifier(input: Channel<Long>, output: Channel<Long>) {
-                val memory = Memory(programNumbers.toMutableList())
+                val memory = Memory(programNumbers)
                 val comp = IntComp(memory, input, output)
                 GlobalScope.launch { comp.runToHalt() }
             }
