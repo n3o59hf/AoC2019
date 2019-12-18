@@ -6,7 +6,6 @@ import lv.n3o.aoc2019.coords.neighbors4
 import lv.n3o.aoc2019.coords.rotate
 import lv.n3o.aoc2019.tasks.Task
 import lv.n3o.aoc2019.tasks.cleanLines
-import lv.n3o.aoc2019.tasks.debugDraw
 import lv.n3o.aoc2019.tasks.doComputation
 
 @Suppress("unused")
@@ -26,16 +25,16 @@ class Task : Task() {
         }
     }
 
-    override fun a(): String {
-        println(map)
-        scaffolds.debugDraw { if (it == true) "*" else " " }
-        return scaffolds.filter { it.value }.keys.filter { it.neighbors4().all { c -> scaffolds[c] == true } }
-            .map { it.x * it.y }.sum().toString()
-    }
+    override fun a() = scaffolds
+        .filter { it.value }
+        .keys
+        .filter { it.neighbors4().all { c -> scaffolds[c] == true } }
+        .map { it.x * it.y }
+        .sum()
+        .toString()
 
     override fun b(): String {
         val robotSign = map.first { it != '.' && it != '#' && it != '\n' }
-        println(robotSign)
         var robot = robotStart
         var direction: Coord2d = when (robotSign) {
             '^' -> C2(0, -1)
@@ -68,7 +67,6 @@ class Task : Task() {
             }
         }
 
-        println(movements)
         val compactMovements = movements.fold(listOf<String>()) { acc, s ->
             if (s.toIntOrNull() != null && acc.lastOrNull()?.toIntOrNull() != null) {
                 acc.dropLast(1) + "${acc.last().toInt() + s.toInt()}"
