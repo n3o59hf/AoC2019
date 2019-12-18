@@ -79,3 +79,10 @@ fun Coord2d.unit() = new(
     x.coerceIn(-1, 1),
     y.coerceIn(-1, 1)
 )
+
+fun Coord2d.neighbors4() = listOf(
+    this + this.new(0, -1),
+    this + this.new(1, 0),
+    this + this.new(0, 1),
+    this + this.new(-1, 0)
+)

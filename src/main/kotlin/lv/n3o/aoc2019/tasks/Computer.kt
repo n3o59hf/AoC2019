@@ -236,7 +236,7 @@ enum class Mode(val modeConstant: Int) {
     RELATIVE(2);
 
     companion object {
-        private val modeCache = Array(values().map { it.modeConstant }.max() ?: 1) { POSITION }.apply {
+        private val modeCache = Array((values().map { it.modeConstant }.max() ?: 0) + 1) { POSITION }.apply {
             values().forEach {
                 this[it.modeConstant] = it
             }
