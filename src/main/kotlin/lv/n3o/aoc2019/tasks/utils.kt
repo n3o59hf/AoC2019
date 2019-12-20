@@ -55,7 +55,7 @@ fun Long.toNearestMultipleUp(factor: Long): Long {
     return ((this / factor) + reminder) * factor
 }
 
-fun <T> Map<Coord2d, T>.debugDraw(cellWidth: Int = 1, conversion: (T?) -> Any = {it.toString()}) {
+fun <T> Map<Coord2d, T>.debugDraw(cellWidth: Int = 1, conversion: (T?) -> Any = { it.toString() }) {
     val allKeys = keys
 
     val maxX = allKeys.map(Coord2d::x).max() ?: 1
@@ -81,3 +81,18 @@ fun <T> Map<Coord2d, T>.debugDraw(cellWidth: Int = 1, conversion: (T?) -> Any = 
     }.joinToString(verticalSeperator) + verticalSeperator
     println("\n$output\n")
 }
+
+class MapWithLazy<K, V>(val backingMap: MutableMap<K, V>, val lazy: (K) -> V) : MutableMap<K,V> by backingMap {
+    override operator fun get(key: K): V {
+        val value = backingMap[key]
+        return if (value == null) {
+            val lazyValue = lazy(key)
+            backingMap[key] = lazyValue
+            lazyValue
+        } else {
+            value
+        }
+    }
+}
+
+fun <K, V> MutableMap<K, V>.withLazy(lazy: (K) -> V) = MapWithLazy(this, lazy)
