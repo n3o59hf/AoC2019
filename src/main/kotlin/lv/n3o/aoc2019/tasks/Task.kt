@@ -20,6 +20,9 @@ abstract class Task {
 
         debugListener?.let { it(("$time ($className.$methodName): $logline\n")) }
     }
+    fun log(scope: () -> String) {
+        if (isLoggerOn()) log(scope())
+    }
 
     open fun a(): String = ""
     open fun b(): String = ""

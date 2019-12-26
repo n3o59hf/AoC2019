@@ -26,6 +26,31 @@ fun <T> List<T>.permute(): List<List<T>> {
     return permutations
 }
 
+fun <T> List<T>.combinations(): Sequence<Set<T>> = sequence {
+    var indexes = intArrayOf()
+    while (indexes.size < this@combinations.size) {
+        indexes = IntArray(indexes.size + 1) { it }
+        while (indexes[0] <= this@combinations.size - indexes.size) {
+            yield(indexes.map { this@combinations[it] }.toSet())
+            var incrementIndex = indexes.size - 1
+            while (incrementIndex >= 0) {
+                indexes[incrementIndex] += 1
+                if (indexes[incrementIndex] > this@combinations.size - (indexes.size - incrementIndex)) {
+                    incrementIndex--
+                } else {
+                    break
+                }
+            }
+            incrementIndex++
+            while (incrementIndex < indexes.size) {
+                if (incrementIndex != 0)
+                    indexes[incrementIndex] = indexes[incrementIndex - 1] + 1
+                incrementIndex++
+            }
+        }
+    }
+}
+
 fun gcd(a: Int, b: Int): Int {
     var gcd = a.coerceAtMost(b)
     while (gcd > 0) {
@@ -82,7 +107,7 @@ fun <T> Map<Coord2d, T>.debugDraw(cellWidth: Int = 1, conversion: (T?) -> Any = 
     println("\n$output\n")
 }
 
-class MapWithLazy<K, V>(val backingMap: MutableMap<K, V>, val lazy: (K) -> V) : MutableMap<K,V> by backingMap {
+class MapWithLazy<K, V>(val backingMap: MutableMap<K, V>, val lazy: (K) -> V) : MutableMap<K, V> by backingMap {
     override operator fun get(key: K): V {
         val value = backingMap[key]
         return if (value == null) {
